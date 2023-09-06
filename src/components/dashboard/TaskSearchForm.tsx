@@ -23,7 +23,7 @@ export const TaskSearchForm: FC = () => {
       allowClear
       enterButton={
         <Button type="primary" icon={<SearchOutlined />}>
-          Найти
+          Поиск
         </Button>
       }
       size="large"
