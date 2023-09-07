@@ -47,7 +47,7 @@ export const Layout: FC<LayoutPropsType> = ({
       <Header
         style={{
           backgroundColor: 'white',
-          borderBottom: '1px solid #F0F0F0',
+          borderBottom: '1px solid #f4f4f7',
         }}
       >
         <Row
@@ -57,7 +57,7 @@ export const Layout: FC<LayoutPropsType> = ({
         >
           <Link to="/">
             <Title level={3} style={{ marginBottom: 0 }}>
-              Exceed Challenger 2023
+              Exceed Challenger
             </Title>
           </Link>
 
@@ -90,7 +90,7 @@ export const Layout: FC<LayoutPropsType> = ({
         {children}
       </StyledContent>
 
-      <Footer style={{ backgroundColor: '#F0F0F0' }}>Exceed Challenger 2023</Footer>
+      <Footer style={{ backgroundColor: '#F0F0F0' }}>Exceed Challenger</Footer>
     </AntdLayout>
   )
 }

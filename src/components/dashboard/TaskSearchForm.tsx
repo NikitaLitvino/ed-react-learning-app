@@ -19,7 +19,7 @@ export const TaskSearchForm: FC = () => {
 
   return (
     <Search
-      placeholder="Поиск по названию задания"
+      placeholder="Поиск по названию"
       allowClear
       enterButton={
         <Button type="primary" icon={<SearchOutlined />}>
