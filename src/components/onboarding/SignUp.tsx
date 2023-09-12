@@ -1,5 +1,5 @@
 import { Link, useHistory } from 'react-router-dom'
-import { Row, Col } from 'antd'
+import { Row } from 'antd'
 import { Formik, Form } from 'formik'
 import { InputField } from '../forms/InputField'
 import { StyledButton } from '../common/StyledComponents'
@@ -45,8 +45,14 @@ export const SignUp = () => {
     >
       {({ isValid }) => (
         <Form>
-          <InputField name="firstName" placeholder="Введите Имя" />
-          <InputField name="lastName" placeholder="Введите Фамилию" />
+          <div style={{ display: 'flex' }}>
+            <InputField
+              $marginRight={5}
+              name="firstName"
+              placeholder="Введите Имя"
+            />
+            <InputField name="lastName" placeholder="Введите Фамилию" />{' '}
+          </div>
 
           <InputField name="email" placeholder="Введите Email" />
           <InputField name="password" placeholder="Введите пароль" isPassword />
@@ -57,7 +63,7 @@ export const SignUp = () => {
           />
 
           <Row justify="space-between" align="middle">
-            <StyledButton type="link" htmlType="submit" disabled={!isValid}>
+            <StyledButton type="primary" htmlType="submit" disabled={!isValid}>
               Зарегистрироваться
             </StyledButton>
             <Link to="/auth?tab=login">Войти в аккаунт</Link>

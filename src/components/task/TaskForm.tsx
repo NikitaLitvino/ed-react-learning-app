@@ -35,19 +35,26 @@ export const TaskForm: FC<TaskFormProps> = ({
   submitButtonText,
   isEdit,
 }) => {
+  const history = useHistory()
   const [inputValue, setInputValue] = useState<string>('')
-
   const { technologies } = useReferences()
-
-  const navigate = useHistory()
-
-  console.log('initialValues!!!', initialValues)
 
   return (
     <Card
       bodyStyle={{ padding: '16px 32px 32px' }}
       headStyle={{ padding: '16px 32px 0px' }}
       title={isEdit ? 'Редактирование задания' : 'Добавление нового задания'}
+      extra={
+        <Button
+          type="primary"
+          ghost
+          onClick={() => {
+            history.goBack()
+          }}
+        >
+          <LeftOutlined /> Назад
+        </Button>
+      }
     >
       <Formik
         initialValues={initialValues}
@@ -62,11 +69,11 @@ export const TaskForm: FC<TaskFormProps> = ({
               placeholder="Введите название"
               $marginBottom={19}
             />
-            {console.log('values', values)}
 
             <Row gutter={[8, 0]}>
               <Col span={12}>
                 <SelectField
+                  placeholder="Выберите направление"
                   $marginBottom={19}
                   label="Направление"
                   name="specialization"
@@ -77,6 +84,7 @@ export const TaskForm: FC<TaskFormProps> = ({
 
               <Col span={12}>
                 <MultipleSelectField
+                  placeholder="Выберите стек технологий"
                   $marginBottom={19}
                   label="Технологии"
                   name="technologies"
@@ -100,6 +108,7 @@ export const TaskForm: FC<TaskFormProps> = ({
                   <Row gutter={[8, 0]} style={{ marginBottom: 19 }}>
                     <Col span={18}>
                       <Input
+                        placeholder="https://github/myproject/example.git"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                       />
@@ -124,25 +133,24 @@ export const TaskForm: FC<TaskFormProps> = ({
                   </Row>
 
                   <Row style={{ marginBottom: '16px', overflow: 'hidden' }}>
-                    {values.attachments.map((item: any) => (
-                      <Tag
-                        key={item}
-                        color="processing"
-                        style={{ margin: '3px 6px 3px 0' }}
-                      >
-                        {item}
-                        <CloseIcon
-                          onClick={() =>
-                            setValues({
-                              ...values,
-                              attachments: values.attachments.filter(
-                                (attachment: string) => attachment !== item,
-                              ),
-                            })
-                          }
-                        />
-                      </Tag>
-                    ))}
+                    <Tag
+                      key={values.attachments}
+                      color="processing"
+                      style={{ margin: '3px 6px 3px 0' }}
+                    >
+                      {values.attachments}
+                      <CloseIcon
+                        onClick={() =>
+                          setValues({
+                            ...values,
+                            attachments: values.attachments.filter(
+                              (attachment: string) =>
+                                attachment !== values.attachments,
+                            ),
+                          })
+                        }
+                      />
+                    </Tag>
                   </Row>
                 </>
               )}
@@ -150,6 +158,7 @@ export const TaskForm: FC<TaskFormProps> = ({
 
             <Row justify="end">
               <Button
+                htmlType="submit"
                 style={{ height: 40 }}
                 type="primary"
                 disabled={!isValid || !dirty}

@@ -1,9 +1,12 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { TaskItem } from '../../../components/dashboard/TaskItem'
+import configureStore from 'redux-mock-store'
 
 describe('TaskItem', () => {
   beforeAll(() => {
+    const initialState = {}
+    const mockStore = configureStore()
     Object.defineProperty(window, 'matchMedia', {
       value: () => {
         return {
@@ -19,26 +22,20 @@ describe('TaskItem', () => {
     const { container } = render(
       <TaskItem
         task={{
-          attachments: [{ id: 36, url: 'https://docs.google.com/document/d' }],
+          attachments: 'https://docs.google.com/document/d',
           description: 'В макетах',
-          id: 23,
-          specialization: {
-            id: 1,
-            title: 'frontend',
-          },
-          technologies: [
-            {
-              id: 123,
-              title: 'adaptive',
-            },
-          ],
+          id: '23',
+          specialization: 'frontend',
+
+          technologies: 'adaptive',
+
           title: 'Компонент выбора способа доставки',
         }}
       />,
     )
     expect(container).toBeTruthy()
     const checkTextRender = screen.getByText(
-      /Компонент выбора способа доставки/i,
+      /Компонент выбора способа доста.../i,
     )
     expect(checkTextRender).toBeInTheDocument()
   })

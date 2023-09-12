@@ -1,6 +1,11 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { TasksCard } from '../../../components/dashboard/TasksCard'
+import configureStore from 'redux-mock-store' //ES6 modules
+import { Provider } from 'react-redux'
+
+const middlewares: any = []
+const mockStore = configureStore(middlewares)
 
 jest.mock('../../../hooks/useQueryRequest', () => ({
   useQueryRequest: () => ({
@@ -14,16 +19,10 @@ jest.mock('../../../hooks/useQueryRequest', () => ({
           attachments: [{ id: 36, url: 'https://docs.google.com/document' }],
           description: 'Описание тестового задания',
           id: 23,
-          specialization: {
-            id: 1,
-            title: 'frontend',
-          },
-          technologies: [
-            {
-              id: 123,
-              title: 'react',
-            },
-          ],
+          specialization: 'frontend',
+
+          technologies: 'react',
+
           title: 'Название тестового задания',
         },
       ],
@@ -32,6 +31,14 @@ jest.mock('../../../hooks/useQueryRequest', () => ({
 }))
 
 describe('TasksCard', () => {
+  const initialState = {
+    filter: {
+      technologies: '',
+      specialization: '',
+    },
+    tasks: {},
+  }
+  const store = mockStore(initialState)
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       value: () => {
@@ -45,7 +52,12 @@ describe('TasksCard', () => {
   })
 
   test('TasksCard', () => {
-    const { container } = render(<TasksCard />)
+    const { container } = render(
+      <Provider store={store}>
+        {' '}
+        <TasksCard />
+      </Provider>,
+    )
     expect(container).toBeTruthy()
   })
 })

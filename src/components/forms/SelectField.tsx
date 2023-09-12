@@ -43,6 +43,7 @@ export const SelectField: FC<SelectFieldProps> = ({
             <GlobalSelectStyle hasError={Boolean(error) && touched} />
             {label && <Row style={{ marginBottom: 10 }}>{label}</Row>}
             <Select
+              data-testid="spec_select"
               defaultValue={initialValue || undefined}
               value={value || null}
               onChange={(val) => {

@@ -3,51 +3,37 @@ import { useHistory, useParams } from 'react-router-dom'
 import { Loader } from '../components/common/Loader'
 import { Layout } from '../components/Layout'
 import { TaskForm } from '../components/task/TaskForm'
-import { ERROR_NOTIFIFCATION_MESSAGE } from '../constants'
-import { useApi } from '../hooks/useApi'
-import { useQueryRequest } from '../hooks/useQueryRequest'
-import { useReferences } from '../hooks/useReferences'
+
 import { ITask } from '../types'
-import {
-  convertSpecializationOptions,
-  convertTechnologiesOptions,
-} from '../utils/converters'
-import {
-  sendErrorNotification,
-  sendSuccessNotification,
-} from '../utils/systemNotification'
+
+import { useDispatch, useSelector } from 'react-redux'
+import { Dispatch } from 'react'
 
 export const EditTask = () => {
-  const api = useApi()
-  const navigate = useHistory()
   const { taskId } = useParams<{ taskId: string }>()
-
-  const { data: task, isLoading } = useQueryRequest<ITask>(
-    `v1/tasks/${taskId}/`,
-  )
-
-  const { technologies, specializations } = useReferences()
+  const dispatch: Dispatch<any> = useDispatch()
+  const navigate = useHistory()
 
   const handleUpdateTask = (values: any) => {
-    api
-      .put(`v1/tasks/${taskId}/`, {
-        ...values,
-        specialization: convertSpecializationOptions(
-          values.specialization,
-          specializations,
-        ),
-        technologies: convertTechnologiesOptions(
-          values.technologies,
-          technologies,
-        ),
-        attachments: values.attachments.map((item: string) => ({ url: item })),
-      })
-      .then(() => {
-        sendSuccessNotification('Задание успешно обновлено')
-        navigate.push('/dashboard')
-      })
-      .catch((err) => sendErrorNotification(ERROR_NOTIFIFCATION_MESSAGE))
+    const task: ITask = {
+      id: values.id,
+      title: values.title,
+      description: values.description,
+      specialization: values.specialization,
+      attachments: values.attachments,
+      technologies: values.technologies,
+    }
+    dispatch({ type: 'CHANGE_TASK', task: task })
+    navigate.push('/dashboard')
   }
+
+  const tasks: ITask[] = useSelector((state: any) => state.tasks)
+
+  const task = tasks.find((element) => {
+    return element.id === taskId
+  })
+
+  const isLoading = false
 
   return (
     <Layout>
@@ -59,11 +45,12 @@ export const EditTask = () => {
             <TaskForm
               isEdit
               initialValues={{
+                id: task.id,
                 title: task.title,
-                specialization: task.specialization.title,
+                specialization: task.specialization,
                 description: task.description,
-                technologies: task.technologies.map((item) => item.title),
-                attachments: task.attachments.map((item) => item.url),
+                technologies: task.technologies,
+                attachments: task.attachments,
               }}
               handleSubmit={handleUpdateTask}
               submitButtonText="Изменить"

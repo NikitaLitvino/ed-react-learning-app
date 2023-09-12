@@ -1,14 +1,12 @@
-import { FC } from 'react'
+import { Dispatch, FC } from 'react'
 import { Row, Col, Card, Button, Tag } from 'antd'
 import styled from 'styled-components'
 import { StyledText } from '../common/StyledComponents'
 import { Form, Formik } from 'formik'
 import { SelectField } from '../forms/SelectField'
-import { generateUrl } from '../../services/generateUrl'
-import { useApi } from '../../hooks/useApi'
-import { useQueryClient } from 'react-query'
 import { useReferences } from '../../hooks/useReferences'
 import { SPECIALIZATION_LIST } from '../../constants'
+import { useDispatch } from 'react-redux'
 
 const StyledButton = styled(Button)`
   height: 40px;
@@ -21,10 +19,8 @@ const StyledCard = styled(Card)`
 `
 
 export const FiltersCard: FC = () => {
+  const dispatch: Dispatch<any> = useDispatch()
   const { technologies } = useReferences()
-
-  const queryClient = useQueryClient()
-  const api = useApi()
 
   return (
     <StyledCard
@@ -39,9 +35,7 @@ export const FiltersCard: FC = () => {
             technologies: [],
           }}
           onSubmit={(values) => {
-            api.get(`v1/tasks/?${generateUrl(values)}`).then((response) => {
-              queryClient.setQueryData(`v1/tasks/`, response.data)
-            })
+            dispatch({ type: 'SET_FILTER', filter: values })
           }}
         >
           {({ resetForm }) => (
@@ -72,13 +66,15 @@ export const FiltersCard: FC = () => {
                 <Col xs={12}>
                   <StyledButton
                     type="ghost"
-                    onClick={() =>
+                    onClick={() =>{
                       resetForm({
                         values: {
                           specialization: '',
                           technologies: [],
-                        },
+                        }, 
                       })
+                      dispatch({ type: 'SET_FILTER', filter: {specialization: '',
+                      technologies: '',} })}
                     }
                   >
                     Сбросить

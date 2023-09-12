@@ -22,9 +22,6 @@ export const MultipleSelectField: FC<SelectFieldProps> = ({
           form: { setFieldValue },
         }: FieldProps) => (
           <Row>
-            {console.log('initialValue', initialValue)}
-            {console.log('options', options)}
-            {console.log('value', value)}
             <GlobalSelectStyle hasError={Boolean(error) && touched} />
             {label && <Row style={{ marginBottom: 10 }}>{label}</Row>}
             <Select
@@ -45,7 +42,11 @@ export const MultipleSelectField: FC<SelectFieldProps> = ({
               {options &&
                 options.length > 0 &&
                 options.map((option, index) => (
-                  <Option key={option.id} value={option.title}>
+                  <Option
+                    key={option.id}
+                    value={option.title}
+                    data-testid="tech_option"
+                  >
                     {option.title}
                   </Option>
                 ))}

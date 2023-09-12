@@ -1,40 +1,35 @@
 import { Button, Card, Col, Divider, Popconfirm, Row, Tag } from 'antd'
-import { FC } from 'react'
+import { Dispatch, FC } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { Breadcrumbs } from '../components/common/Breadcrumbs'
 import { Loader } from '../components/common/Loader'
 import { Layout } from '../components/Layout'
-import { StyledText } from '../components/common/StyledComponents'
+import { StyledText,StyledTitile } from '../components/common/StyledComponents'
 import { ITask } from '../types'
-import { useQueryRequest } from '../hooks/useQueryRequest'
 import { StatusButton } from '../components/task/StatusButton'
 import ReactMarkdown from 'react-markdown'
-import { useApi } from '../hooks/useApi'
-import {
-  sendErrorNotification,
-  sendSuccessNotification,
-} from '../utils/systemNotification'
-import { ERROR_NOTIFIFCATION_MESSAGE } from '../constants'
+
 import { AdminRequired } from '../hocs/AdminRequired'
 import { DeleteOutlined, EditOutlined, LeftOutlined } from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
 
 export const TaskProfile: FC = () => {
   const { taskId } = useParams<{ taskId: string }>()
-  const taskUrl = `v1/tasks/${taskId}/`
-
-  const api = useApi()
+  const dispatch: Dispatch<any> = useDispatch()
   const navigate = useHistory()
+ 
 
-  const { data: task, isLoading } = useQueryRequest<ITask>(taskUrl)
+  
+  const tasks: ITask[] = useSelector((state: any) => state.tasks)
 
-  const handleDeleteTask = () => {
-    api
-      .delete(taskUrl)
-      .then(() => {
-        sendSuccessNotification('Задание успешно удалено')
-        navigate.push('/dashboard')
-      })
-      .catch((err) => sendErrorNotification(ERROR_NOTIFIFCATION_MESSAGE))
+  const task = tasks.find((element)=>{return element.id=== taskId})
+    
+  const isLoading = false;
+  
+
+  const handleDeleteTask = (values:any) => {
+    dispatch({type: "DELETE_TASK", task: values} )
+    navigate.push('/dashboard')
   }
 
   return (
@@ -61,7 +56,7 @@ export const TaskProfile: FC = () => {
                 <AdminRequired>
                   <Popconfirm
                     title="Вы уверены, что хотите удалить эту задачу?"
-                    onConfirm={handleDeleteTask}
+                    onConfirm={()=>handleDeleteTask(task)}
                     okText="Да"
                     cancelText="Нет"
                   >
@@ -87,43 +82,43 @@ export const TaskProfile: FC = () => {
               }
             >
               <Row align="middle" style={{ marginBottom: 20 }}>
-                <StyledText>{task.specialization.title}</StyledText>
+                <StyledTitile>{task.specialization}</StyledTitile>
 
                 <Divider
                   type="vertical"
                   style={{ background: '#555555', height: '20px' }}
                 />
 
-                {task.technologies.map((technology) => (
-                  <Tag key={technology.id} color="green">
-                    {technology.title}
+                
+                  <Tag key={task.technologies} color="green">
+                    {task.technologies}
                   </Tag>
-                ))}
+                
               </Row>
 
               <Row gutter={[0, 8]} style={{ marginBottom: 6 }}>
                 <Col span={24}>
-                  <StyledText>Описание задания</StyledText>
+                  <StyledText >Описание задания</StyledText>
                 </Col>
 
                 <Col span={24} style={{ wordWrap: 'break-word' }}>
-                  <ReactMarkdown>{task.description}</ReactMarkdown>
+                  <ReactMarkdown>{task.description.length > 200 ? (task.description.slice(0,200,)+'...'):(task.description)}</ReactMarkdown>
                 </Col>
               </Row>
 
-              {task.attachments.length > 0 && (
+              {task.attachments && (
                 <Row style={{ overflow: 'hidden' }}>
-                  {task.attachments.map((attachment) => (
+                  
                     <Col
                       style={{ margin: '5px 0' }}
-                      key={attachment.id}
+                      key={task.attachments}
                       span={24}
                     >
-                      <a href={attachment.url} target="_blank">
-                        {attachment.url}
+                      <a href={task.attachments} target="_blank">
+                        {task.attachments}
                       </a>
                     </Col>
-                  ))}
+                  
                 </Row>
               )}
 

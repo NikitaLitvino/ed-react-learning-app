@@ -1,6 +1,11 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { FiltersCard } from '../../../components/dashboard/FiltersCard'
+import configureStore from 'redux-mock-store' //ES6 modules
+import { Provider } from 'react-redux'
+
+const middlewares: any = []
+const mockStore = configureStore(middlewares)
 
 jest.mock('../../../hooks/useReferences', () => ({
   useReferences: () => ({
@@ -42,6 +47,7 @@ jest.mock('react-query', () => {
 })
 
 describe('FiltersCard', () => {
+  const store = mockStore()
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       value: () => {
@@ -55,7 +61,11 @@ describe('FiltersCard', () => {
   })
 
   test('FiltersCard', () => {
-    const { container } = render(<FiltersCard />)
+    const { container } = render(
+      <Provider store={store}>
+        <FiltersCard />
+      </Provider>,
+    )
     expect(container).toBeTruthy()
     const checkTextRender = screen.getByText(/Фильтры/i)
     expect(checkTextRender).toBeInTheDocument()

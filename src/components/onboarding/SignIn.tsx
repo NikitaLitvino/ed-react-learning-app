@@ -5,9 +5,16 @@ import { SingInSchema } from '../../forms/validators'
 import { InputField } from '../forms/InputField'
 import { StyledButton } from '../common/StyledComponents'
 import { useAuth } from '../../hooks/useAuth'
+import { useHistory } from 'react-router-dom'
 
 export const SignIn = () => {
+  const navigate = useHistory()
   const { onLogin } = useAuth()
+
+  const lazySignIn =()=>{
+    localStorage.setItem("authToken", "sadqeqwdasd")
+    navigate.push("/dashboard")
+  }
 
   return (
     <Formik
@@ -15,7 +22,7 @@ export const SignIn = () => {
         username: '',
         password: '',
       }}
-      onSubmit={onLogin}
+      onSubmit={lazySignIn}
       validationSchema={SingInSchema}
     >
       {({ isValid }) => (

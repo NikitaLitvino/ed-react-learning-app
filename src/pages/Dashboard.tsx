@@ -9,7 +9,8 @@ import { AdminRequired } from '../hocs/AdminRequired'
 import { useHistory } from 'react-router-dom'
 
 export const Dashboard: FC = () => {
-  const navigate = useHistory()
+  const navigate = useHistory();
+  
 
   return (
     <Layout>

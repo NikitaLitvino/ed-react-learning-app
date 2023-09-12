@@ -2,43 +2,27 @@ import { Col, Row } from 'antd/lib/grid'
 import { useHistory } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { TaskForm } from '../components/task/TaskForm'
-import { ERROR_NOTIFIFCATION_MESSAGE } from '../constants'
-import { useApi } from '../hooks/useApi'
-import { useReferences } from '../hooks/useReferences'
-import {
-  convertTechnologiesOptions,
-  convertSpecializationOptions,
-} from '../utils/converters'
-import {
-  sendErrorNotification,
-  sendSuccessNotification,
-} from '../utils/systemNotification'
+import { ITask } from '../types'
+import { useDispatch } from 'react-redux'
+import { Dispatch } from 'redux'
+import { nanoid } from 'nanoid'
 
 export const NewTask = () => {
-  const api = useApi()
   const navigate = useHistory()
 
-  const { technologies, specializations } = useReferences()
-
+  const dispatch: Dispatch<any> = useDispatch()
   const handleCreateTask = (values: any) => {
-    api
-      .post('v1/tasks/', {
-        ...values,
-        technologies: convertTechnologiesOptions(
-          values.technologies,
-          technologies,
-        ),
-        specialization: convertSpecializationOptions(
-          values.specialization,
-          specializations,
-        ),
-        attachments: values.attachments.map((item: string) => ({ url: item })),
-      })
-      .then(() => {
-        sendSuccessNotification('Задание успешно создано')
-        navigate.push('/dashboard')
-      })
-      .catch((err) => sendErrorNotification(ERROR_NOTIFIFCATION_MESSAGE))
+    const task: ITask = {
+      id: nanoid(),
+      title: values.title,
+      description: values.description,
+      specialization: values.specialization,
+      attachments: values.attachments,
+      technologies: values.technologies,
+    }
+
+    dispatch({ type: 'ADD_TASK', task: task })
+    navigate.push('/dashboard')
   }
 
   return (

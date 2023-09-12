@@ -3,7 +3,13 @@ import { useHistory } from 'react-router-dom'
 import { Loader } from '../components/common/Loader'
 import { AuthContext } from '../contexts/auth'
 import { useApi } from '../hooks/useApi'
-import { IUser } from '../types'
+import {
+  IUser,
+  ITask,
+  IAttachment,
+  ITechnology,
+  ISpecialization,
+} from '../types'
 import { sendErrorNotification } from '../utils/systemNotification'
 import { setAuthHeader } from './ApiProvider'
 
@@ -18,19 +24,38 @@ export const AuthProvider: FC = ({ children }) => {
 
   const api = useApi()
 
-  const getUserProfile = (): Promise<void> =>
-    api
-      .get('user/profile/')
-      .then(({ data }) => {
-        setState(() => ({
-          isLoading: false,
-          user: data,
-        }))
-      })
-      .catch(() => {
-        setState(() => ({ isLoading: false }))
-        onLogout()
-      })
+  let tech: ITechnology = {
+    id: 1,
+    title: 'tech',
+  }
+
+  let attach: IAttachment = {
+    id: 1,
+    url: 'attach.com',
+  }
+
+  let task: ITask = {
+    id: '1',
+    title: 'Do',
+    description: 'Do something',
+    specialization: 'Specialization',
+    technologies: tech.title,
+    attachments: attach.url,
+  }
+
+  const getUserProfile = (): void =>
+    setState(() => ({
+      isLoading: false,
+      user: {
+        email: 'hello@gmail.com',
+        first_name: 'Nikita',
+        id: 1,
+        is_admin: true,
+        last_name: 'Litvinov',
+        completed_tasks: [task],
+        active_tasks: [task],
+      },
+    }))
 
   useEffect(() => {
     setAuthHeader(api, localStorage.authToken)
@@ -39,21 +64,8 @@ export const AuthProvider: FC = ({ children }) => {
   }, [])
 
   const onLogin = (values: any) => {
-    api
-      .post('login/', { ...values })
-      .then(({ data }) => {
-        if (data) {
-          localStorage.setItem('authToken', data.token)
-          setAuthHeader(api, data.token)
-
-          getUserProfile().then(() => {
-            navigate.push('/dashboard')
-          })
-        }
-      })
-      .catch(() => {
-        sendErrorNotification('Пользователь с введенными данными не найден')
-      })
+    getUserProfile()
+    navigate.push('/dashboard')
   }
 
   const onLogout = () => {

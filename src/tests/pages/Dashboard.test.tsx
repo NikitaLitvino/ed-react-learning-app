@@ -2,6 +2,11 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { Dashboard } from '../../pages/Dashboard'
 import { QueryClient } from 'react-query'
+import configureStore from 'redux-mock-store' //ES6 modules
+import { Provider } from 'react-redux'
+
+const middlewares: any = []
+const mockStore = configureStore(middlewares)
 
 jest.mock('react-router-dom', () => {
   const originalModule = jest.requireActual('react-router-dom')
@@ -101,6 +106,14 @@ jest.mock('react-query', () => {
 })
 
 describe('Dashboard', () => {
+  const initialState = {
+    filter: {
+      technologies: '',
+      specialization: '',
+    },
+    tasks: {},
+  }
+  const store = mockStore(initialState)
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       value: () => {
@@ -114,7 +127,11 @@ describe('Dashboard', () => {
   })
 
   test('Dashboard', () => {
-    const { container } = render(<Dashboard />)
+    const { container } = render(
+      <Provider store={store}>
+        <Dashboard />
+      </Provider>,
+    )
     expect(container).toBeTruthy()
   })
 })

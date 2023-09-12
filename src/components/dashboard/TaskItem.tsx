@@ -21,17 +21,19 @@ export const TaskItem: FC<TaskItemProps> = ({ task }) => {
       >
         <Col xs={17}>
           <StyledText style={{ padding: '0 20px 0 0' }}>
-            {task.title}
+            {task.title.length > 30
+              ? task.title.slice(0, 30) + '...'
+              : task.title}
           </StyledText>
         </Col>
 
         <Col offset={1} xs={6}>
-          <StyledText>{task.specialization.title}</StyledText>
+          <StyledText>{task.specialization}</StyledText>
 
           <Divider type="vertical" />
 
-          <Tag key={task.technologies[0]?.id} color="green">
-            {task.technologies[0]?.title}
+          <Tag key={task.technologies} color="green">
+            {task.technologies}
           </Tag>
           {task.technologies.length > 1 && (
             <StyledText>+{task.technologies.length - 1}</StyledText>

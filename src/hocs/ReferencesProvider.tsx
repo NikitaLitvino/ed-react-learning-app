@@ -6,11 +6,26 @@ import { ITechnology, ISpecialization } from '../types'
 
 export const ReferencesProvider: FC = ({ children }) => {
   // TODO for now using only technologies
-  const { data: dataTech, isLoading: isLoadingTech } =
+  /*const { data: dataTech, isLoading: isLoadingTech } =
     useQueryRequest<ITechnology[]>('v1/technologies/')
   const { data: dataSpec, isLoading: isLoadingSpec } = useQueryRequest<
     ISpecialization[]
   >('v1/specializations/')
+  */
+
+  let tech: ITechnology = {
+    id: 1,
+    title: 'tech',
+  }
+
+  let spec: ISpecialization = {
+    id: 1,
+    title: 'special',
+  }
+  const isLoadingTech = false
+  const isLoadingSpec = false
+  const dataTech = [tech]
+  const dataSpec = [spec]
 
   return (
     <>

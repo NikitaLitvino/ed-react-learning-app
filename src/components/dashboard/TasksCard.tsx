@@ -1,14 +1,48 @@
-import { FC } from 'react'
+import { FC, useState, useEffect } from 'react'
 import { Row, Card, Spin } from 'antd'
 import { StyledText } from '../common/StyledComponents'
 import { TasksPagination } from './TasksPagination'
 import { TaskItem } from './TaskItem'
-import { DjangoResponse, ITask } from '../../types'
-import { useQueryRequest } from '../../hooks/useQueryRequest'
+import { useSelector } from 'react-redux'
+import { IFilter, ITask } from '../../types'
 
 export const TasksCard: FC = () => {
-  const { isLoading, data } =
-    useQueryRequest<DjangoResponse<ITask[]>>(`v1/tasks/`)
+  const tasks: ITask[] = useSelector((state: any) => state.tasks)
+  const filter: IFilter = useSelector((state: any) => state.filter)
+  const [renderList, setRenderList] = useState<ITask[]>([])
+  const isLoading = false
+  useEffect(() => {
+    if (filter.specialization !== '' && filter.technologies.length !== 0) {
+      setRenderList(
+        tasks.filter((element) => {
+          return (
+            element.specialization === filter.specialization &&
+            element.technologies === filter.technologies
+          )
+        }),
+      )
+    } else if (filter.specialization !== '') {
+      setRenderList(
+        tasks.filter((element) => {
+          return element.specialization === filter.specialization
+        }),
+      )
+    } else if (filter.technologies.length !== 0) {
+      setRenderList(
+        tasks.filter((element) => {
+          return element.technologies === filter.technologies
+        }),
+      )
+    } else {
+      setRenderList(tasks)
+    }
+  }, [filter])
+
+  useEffect(() => {
+    setRenderList(tasks)
+  }, [])
+
+  const data = { results: [renderList] }
 
   return (
     <Card bodyStyle={{ padding: 32 }} style={{ marginBottom: 20 }}>
@@ -24,14 +58,14 @@ export const TasksCard: FC = () => {
         </Row>
       )}
 
-      {data && data.results.length > 0 ? (
+      {renderList && renderList.length > 0 ? (
         <>
-          {data.results.map((task) => (
+          {renderList.map((task) => (
             <TaskItem key={task.id} task={task} />
           ))}
 
           <Row justify="center">
-            <TasksPagination steps={data.results.length / 10} />
+            <TasksPagination steps={renderList.length / 10} />
           </Row>
         </>
       ) : (

@@ -1,6 +1,6 @@
 import React from 'react'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { EditTask } from '../../pages/EditTask'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { NewTask } from '../../pages/NewTask'
 import configureStore from 'redux-mock-store' //ES6 modules
 import { Provider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
@@ -19,9 +19,6 @@ jest.mock('react-router-dom', () => {
         search: 'search',
         pathname: 'pathname',
       },
-    }),
-    useParams: () => ({
-      taskId: '1ffgj23dfaf234fg3',
     }),
   }
 })
@@ -84,20 +81,8 @@ jest.mock('../../hooks/useAuth', () => ({
   }),
 }))
 
-describe('EditTask', () => {
-  const initialState = {
-    tasks: [
-      {
-        attachments: 'https://docs.google.com/document',
-        description: 'Описание тестового задания',
-        id: 23,
-        specialization: 'frontend',
-        technologies: 'react',
-        title: 'Название тестового задания',
-      },
-    ],
-  }
-  const store = mockStore(initialState)
+describe('NewTask', () => {
+  const store = mockStore()
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       value: () => {
@@ -110,13 +95,46 @@ describe('EditTask', () => {
     })
   })
 
-  test('EditTask', async () => {
+  test('NewTask', async () => {
     const { container } = render(
       <Provider store={store}>
         {' '}
-        <EditTask />
+        <NewTask />
       </Provider>,
     )
     expect(container).toBeTruthy()
+
+    userEvent.type(
+      screen.getByPlaceholderText('Введите название'),
+      'Hello todo',
+    )
+
+    userEvent.type(screen.getByPlaceholderText('Введите текст'), 'Description')
+
+    const specSelect = screen.getAllByRole('combobox')[0]
+    act(() => {
+      userEvent.click(specSelect)
+    })
+    await waitFor(() => screen.getByText('Frontend'))
+    act(() => {
+      fireEvent.click(screen.getByText('Frontend'))
+    })
+    const techSelect = screen.getAllByRole('combobox')[1]
+    act(() => {
+      userEvent.click(techSelect)
+    })
+    await waitFor(() => screen.getAllByText('adaptive')[1])
+    act(() => {
+      fireEvent.click(screen.getAllByText('adaptive')[1])
+    })
+    act(() => {
+      userEvent.click(screen.getAllByText('Добавить')[1])
+    })
+    expect(
+      screen.getByPlaceholderText('Введите название').getAttribute('value'),
+    ).toBe('Hello todo')
+    expect(screen.getByText('Description')).toBeInTheDocument()
+    expect(screen.getAllByText('Frontend')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('adaptive')[0]).toBeInTheDocument()
   })
 })

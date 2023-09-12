@@ -14,6 +14,7 @@ interface IInputProps {
   isPassword?: boolean
   label?: ReactNode
   $marginBottom?: number
+  $marginRight?: number
 }
 
 export const InputField: FC<IInputProps> = ({
@@ -22,8 +23,9 @@ export const InputField: FC<IInputProps> = ({
   isPassword,
   label,
   $marginBottom,
+  $marginRight,
 }) => (
-  <FieldContainer $marginBottom={$marginBottom}>
+  <FieldContainer $marginBottom={$marginBottom} $marginRight={$marginRight}>
     <Field name={name}>
       {({ field, meta: { error, touched } }: FieldProps) => (
         <>
